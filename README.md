@@ -7,10 +7,30 @@
 
 다음으로 프레임워크로 `Tensorflow`를 사용하였고, 모델은 huggingface를 통해 `KoBERT`를 불러왔습니다. `BATCH SIZE`는 32로 설정했습니다. 활성화 함수로 `sigmoid`를 사용하였고, `Learning rate`는 5.0e-5, 평가 척도는 `accuracy`로 설정했습니다. 이후 5 에포크 동안 훈련시킨 결과, `accuracy`는 0.90으로 계산되었습니다. 
 
+## 훈련 과정
+
+![CM1](./Unsmile-fine-tuning-KoBERT.png)
+
 훈련시킨 모델을 `한국어 혐오표현 데이터셋`에 테스트한 결과, `accuracy`는 0.73이 계산되었으며, `HateScore`에 테스트한 결과, `accuracy`는 0.64가 계산되었습니다. 
+
 __이를 통해 세 데이터셋 간의 일반화 가능성(generalizability)이 약하다는 것을 확인하였습니다.__
 
-__한국어 혐오표현 데이터셋 Confusion Metrix__
+## 한국어 혐오표현 데이터셋 Confusion Metrix
 
-![CM]("./[CM]Beep_predicted_by_Unsmile.png")
+__Accuracy: 0.73__
+Precision: 0.58
+Recall: 0.81
+Specificity: 0.68
+F1_Score: 0.68
 
+![CM3](./[CM]Beep_predicted_by_Unsmile.png)
+
+## HateScore Confusion Metrix
+
+__Accuracy: 0.64__
+Precision: 0.15
+Recall: 0.95
+Specificity: 0.61
+F1_Score: 0.27
+
+![CM5](./[CM]Beep_predicted_by_Unsmile.png)
