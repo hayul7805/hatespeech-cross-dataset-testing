@@ -10,3 +10,7 @@
 훈련시킨 모델을 `한국어 혐오표현 데이터셋`에 테스트한 결과, `accuracy`는 0.73이 계산되었으며, `HateScore`에 테스트한 결과, `accuracy`는 0.64가 계산되었습니다. 
 __이를 통해 세 데이터셋 간의 일반화 가능성(generalizability)이 약하다는 것을 확인하였습니다.__
 
+__한국어 혐오표현 데이터셋 Confusion Metrix__
+
+![CM]("./[CM]Beep_predicted_by_Unsmile.png")
+
