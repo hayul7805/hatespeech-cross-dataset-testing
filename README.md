@@ -1,40 +1,90 @@
-# 한국어 혐오표현 데이터셋 Cross-dataset-Testing
+# 한국어 혐오표현 데이터셋 교차 검증 연구(Cross-dataset test for improving hate speech detection models)
 
-최근 혐오표현 탐지에 대한 관심이 모임에 따라 다양한 혐오표현 데이터셋이 발표되었습니다. 그러나 데이터셋 간의 `일반화 가능성(generalizability)`을 보는 연구는 아직 수행된 바가 없습니다. 이에 저는 혐오표현 데이터셋간의 cross-dataset-testing을 함으로써 탐지 모델의 견고성(robustness)를 확보하고자 합니다. 
+> **Author: Hayul Park (Korea Univ., major in Computational Linguistics)**
 
-먼저 [Smilegate.AI](http://Smilegate.AI)에서 배포한 `Unsmile` 데이터셋을 이용해 언어 모델을 `classification task`로 fine-tuning하고, 훈련시킨 모델을 다른 혐오표현 데이터셋에 테스트해보는 “Cross-Dataset Testing”을 개인 프로젝트로 진행했습니다. 구체적으로, `Unsmile` 데이터셋에 훈련된 모델이 [한국어 혐오표현 데이터셋](https://github.com/kocohub/korean-hate-speech) 과 [HateScore](https://github.com/sgunderscore/hatescore-korean-hate-speech) 데이터셋을 __어느 정도로 정확히__ 예측하는지 실험했습니다. 
+이 레포지터리는 `'혐오표현 탐지 모델의 개선을 위한 데이터셋 교차 검증'`이라는 제목으로 2023.02 출판 예정인 학위논문의 소스 코드와 실험 결과를 담고 있습니다. 
 
-같은 방식으로 [한국어 혐오표현 데이터셋](https://github.com/kocohub/korean-hate-speech)(이하 Beep)을 이용해 언어 모델을 `classification task`로 fine-tuning하고, 훈련시킨 모델을 [Unsmile](https://github.com/smilegate-ai/korean_unsmile_dataset)과 [HateScore](https://github.com/sgunderscore/hatescore-korean-hate-speech) 데이터셋을 __어느 정도로 정확히__ 예측하는지 실험했습니다. 
+This repository contains experimental results and its source code of my master's thesis to be published on 2023.02, under the title `'Cross-dataset test for improving speech detection models'`.
 
-실험은 `Colab pro GPU` 환경에서 진행되었습니다. 실험 과정은 다음과 같습니다. 먼저 `Unsmile` 데이터셋은 여러 사회적 소수자에 따른 `label`이 존재하므로, 이를 하나로 합쳐서 'hate’ column을 만들고 해당 문장이 혐오표현이면 ‘1’, 아니면 ‘0’을 기입했습니다. 나머지 두 데이터셋 또한 같은 방식으로 ‘hate’ column을 만들었습니다. 이후 Unsmile 데이터셋은 train/test 셋으로 0.7/0.3 비율로 분할하였습니다.  
+## 초록
 
-다음으로 프레임워크로 `Tensorflow`를 사용하였고, 모델은 huggingface를 통해 `KoBERT`를 불러왔습니다. `BATCH SIZE`는 32로 설정했습니다. 활성화 함수로 `sigmoid`를 사용하였고, `Learning rate`는 5.0e-5, 평가 척도는 `accuracy`로 설정했습니다. 이후 5 에포크 동안 훈련시킨 결과, `accuracy`는 0.90으로 계산되었습니다. 
+강건한(robust) 혐오표현 탐지 모델은 이전에 학습한 데이터와 다른 특징을 가진 혐오표현 데이터에도 일정한 분류 성능을 내는, 일반화가 잘 되는 모델이다. 그러나 현행의 모델 학습에 사용되는 데이터셋은 생성 방식, 주석 지침, 수집 플랫폼이 모두 달라서 어느 한 데이터셋을 잘 학습한 모델이더라도 다른 데이터셋에서는 성능이 상당히 달라진다. 이와 관련하여 외국에서는 몇몇 연구들이 혐오표현 탐지 모델의 일반화 가능성(generalizability)에 대해 선행적으로 논의를 시작하고 있으나, 아직 한국어 혐오표현 데이터셋과 이를 학습한 모델을 대상으로는 연구가 진행되지 않았다. 한국에서도 현재 온라인 혐오표현으로 많은 피해자가 생기고 있는 만큼, 강건하고 일반화가 잘 되는 혐오표현 탐지 모델이 시급하다. 따라서 본 연구는 한국어 혐오표현 데이터셋과 이를 학습한 모델의 일반화 가능성을 확인하고자 데이터셋 교차 검증(cross-dataset test)을 수행했다. 본 연구에서 사용한 데이터셋은 현재 공개되어 있는 데이터셋 중에 구축 지침이 명확한 4개의 데이터셋으로 한정하였다. 결과는 정확도와 F1 점수라는 정량적 지표와 함께, 정성적으로 각 모델과 데이터셋에 대한 오분류 사례를 제시했다. 실험의 결과로, [Moon 외 (2021)](https://github.com/kocohub/korean-hate-speech)의 데이터셋을 학습한 모델이 다른 데이터셋에서 비교적 성능 변화가 적어, 가장 일반화가 잘 되는 것을 확인하였다. 또한 양성 샘플의 비율이 큰 데이터셋으로 학습한 모델이, 양성 샘플의 비율이 큰, 다른 데이터셋에 테스트할 때 성능의 변화가 적은 것을 확인하여, 양성 샘플의 비율이 일반화 가능성과 관련된다는 것을 제시했다. 본 연구는 한국어 혐오표현 탐지 연구에 있어서 데이터셋 교차 검증을 통해 일반화 가능성에 대한 논의를 시작하였다는 의의가 있다. 
 
-## 훈련 과정
-편의상 Unsmile 테스트 결과만 기술합니다. 
+## Abstract
+Machine learning models are robust when they generalize well to unseen data. However, hate speech detection models usually fail to generalize to similar but different hate contents, such as other hate speech datasets, as they differ in construction methods, annotation guidelines, and data sources from the data the model learned. A few have begun to discuss the generalizability of hate speech datasets, but it is only limited to the datasets written in English, while the generalizability of the Korean hate speech datasets has not yet been shed light. However, as victims of online hate speech are growing in Korea, a robust hate speech detection model is urgently needed. Therefore, this study examined the generalizability of the Korean hate speech datasets through cross-dataset test. I chose four publicly available datasets with clear construction guidelines and KcELECTRA model. I used them alternately in model training and testing and showed accuracy and F1 scores along with error examples for each pair. As a result, I found that the performance of the model trained with Moon et al. (2021) datasets changed relatively few on other datasets, meaning the model generalizes well to new data. In addition, I found that the model trained with a dataset with a large proportion of positive samples showed little change in performance when tested on other datasets with a large proportion of positive samples, meaning that the proportion of positive samples is important for generalizability. This study is meaningful as the starting point of the discussion on the generalization of Korean hate speech datasets. 
 
-![CM1](./Unsmile-fine-tuning-KoBERT.png)
+## 데이터셋(Datasets)
 
-훈련시킨 모델을 `한국어 혐오표현 데이터셋`에 테스트한 결과, `accuracy`는 0.73이 계산되었으며, `HateScore`에 테스트한 결과, `accuracy`는 0.64가 계산되었습니다. 
+본 연구에서 사용한 데이터셋은 다음 4가지입니다.
 
-__이를 통해 세 데이터셋 간의 일반화 가능성(generalizability)이 약하다는 것을 확인하였습니다.__
+- [Apeach](https://github.com/jason9693/APEACH)
+- [Beep](https://github.com/kocohub/korean-hate-speech)
+- [HateScore](https://github.com/sgunderscore/hatescore-korean-hate-speech)
+- [Unsmile](https://github.com/smilegate-ai/korean_unsmile_dataset)
 
-## 한국어 혐오표현 데이터셋 Confusion Metrix
+이상의 데이터셋의 정보는 다음과 같습니다.
 
-__Accuracy: 0.73__
-Precision: 0.58
-Recall: 0.81
-Specificity: 0.68
-F1_Score: 0.68
+| Datasets  | Method           | Columns                                                              | Hate  | Non-hate | Others | Hate  | Non-hate | Others |
+| --------- | ---------------- | -------------------------------------------------------------------- | :---- | :------- | :----- | :---- | :------- | :----- |
+| Apeach    | Crowd generation | text, user age, user gender, text topic, class, age, text topic(eng) | -     | -        | -      | 1,922 | 1,778    | -      |
+| Beep      | Crawling         | comments, contain gender bias, bias, hate                            | 1,911 | 3,486    | 2,499  | 122   | 160      | 189    |
+| HateScore | Mixed            | comment, macro label, micro label, source                            | 782   | 10,174   | 152    | -     | -        | -      |
+| Unsmile   | Crawling         | 문장, 여성/가족, 남성, 성소수자, 인종/국적, 연령, 지역, 종교, 기타 혐오, 악플/욕설, clean, 개인 지칭   | 8,143 | 3,739    | 3,143  | 2,016 | 935      | 786    |
 
-![CM3](./[CM]Beep_predicted_by_Unsmile.png)
+이상의 데이터셋을 실험을 위해 이진화하여 변환하면 아래와 같습니다. 
 
-## HateScore Confusion Metrix
+| Datasets  | Train/Hate   | Train/Non-hate | Test/Hate  | Test/Non-hate |
+| --------- | :----- | :-- | :-- | :---- | :-- | :-- |
+| Apeach    | -      | -        | 1,922 | 1,778    |
+| Beep      | 4,410  | 3,486    | 311   | 160      |
+| HateScore | 547    | 7,122    | 235   | 3,052    |
+| Unsmile   | 11,266 | 3,739    | 2,802 | 935      |
 
-__Accuracy: 0.64__
-Precision: 0.15
-Recall: 0.95
-Specificity: 0.61
-F1_Score: 0.27
 
-![CM5](./[CM]HateScore_predicted_by_Unsmile.png)
+## 혐오표현 탐지 모델 훈련(Hate speech detection model training)
+
+**Hyper-parameters**
+- model : KcELECTRA-base
+- batch size : 64
+- learning rate : 5e-5
+- max_sequence_length : 128
+- max_epoch : 10
+- weight decay : 0.5
+- optimizer : AdamW
+
+### In-domain performance
+모델의 테스트 데이터셋에서의 In-domain performance는 다음과 같습니다. 
+
+| Model               | Accuracy  | F1 Score   |
+| ------------------- | --------- | ---------- |
+| Beep-KcELECTRA      | 0.81      | 0.83       |
+| HateScore-KcELECTRA | 0.98      | 0.85       |
+| Unsmile-KcELECTRA   | 0.89      | 0.92       |
+
+## 데이터셋 교차 검증 결과(Cross-datasets test result)
+
+### Out-of-domain performance
+훈련 데이터셋(In-domain)이 아닌, 외부 데이터셋(Out-of-domain)에서의 데이터셋 교차 검증 결과는 아래 표와 같습니다.
+
+| Metrics  | Models              | Apeach | Beep | HateScore | Unsmile |
+| -------- | ------------------- | ------ | ---- | --------- | ------- |
+| Accuracy | Beep-KcELECTRA      | 0.83   | -    | 0.60      | 0.85    |
+| Accuracy | HateScore-KcELECTRA | 0.74   | 0.58 | -         | 0.73    |
+| Accuracy | Unsmile-KcELECTRA   | 0.82   | 0.76 | 0.77      | -       |
+| F1 Score | Beep-KcELECTRA      | 0.85   | -    | 0.25      | 0.90    |
+| F1 Score | HateScore-KcELECTRA | 0.67   | 0.42 | -         | 0.79    |
+| F1 Score | Unsmile-KcELECTRA   | 0.84   | 0.75 | 0.36      | -       |
+
+### Out-of-domain difference
+In-domain 테스트 데이터셋 대비, 외부 데이터셋(Out-of-domain)에서의 성능 차이(difference)는 아래 표와 같습니다.
+
+| Metrics  | Models              | Apeach | Beep  | HateScore | Unsmile |
+| -------- | ------------------- | ------ | ----- | --------- | ------- |
+| Accuracy | Beep-KcELECTRA      | 0.02   | -     | -0.21     | 0.04    |
+| Accuracy | HateScore-KcELECTRA | -0.24  | -0.40 | -         | -0.25   |
+| Accuracy | Unsmile-KcELECTRA   | -0.07  | -0.13 | -0.12     | -       |
+| F1 Score | Beep-KcELECTRA      | 0.02   | -     | -0.58     | 0.07    |
+| F1 Score | HateScore-KcELECTRA | -0.18  | -0.43 | -         | -0.06   |
+| F1 Score | Unsmile-KcELECTRA   | -0.08  | -0.17 | -0.56     | -       |
+
+> To be updated...
