@@ -34,7 +34,7 @@ Machine learning models are robust when they generalize well to unseen data. How
 이상의 데이터셋을 실험을 위해 이진화하여 변환하면 아래와 같습니다. 
 
 | Datasets  | Train/Hate   | Train/Non-hate | Test/Hate  | Test/Non-hate |
-| --------- | :----- | :-- | :-- | :---- | :-- | :-- |
+| --------- | :----- | :-- | :-- | :---- |
 | Apeach    | -      | -        | 1,922 | 1,778    |
 | Beep      | 4,410  | 3,486    | 311   | 160      |
 | HateScore | 547    | 7,122    | 235   | 3,052    |
